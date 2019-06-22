@@ -1,0 +1,69 @@
+﻿@page "/fetchdata"
+
+@using KenticoCloud.Delivery
+@using CloudBoilerplateNet.Models
+
+@inject HttpClient Http
+
+<h1>Dancing Goat Articles</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+<p>
+    Content type: <select id="types">
+
+        @if (contentTypes == null)
+        {
+            <option>Loading ...</option>
+        }
+        else
+        {
+            @foreach (var type in contentTypes)
+            {
+                <option value="@type.System.Codename" selected="@(type.System.Codename == "article")">@type.System.Name</option>
+            }
+        }
+    </select>
+</p>
+
+@if (articles == null)
+{
+    <p><em>Loading ...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>PostDate</th>
+                <th>MetaKeywords</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var article in articles)
+            {
+                <tr>
+                    <td>@article.Title</td>
+                    <td>@article.PostDate?.ToString("yyyy-MM-dd")</td>
+                    <td>@article.MetaKeywords</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    IEnumerable<Article> articles;
+    IEnumerable<ContentType> contentTypes;
+
+    private CustomTypeProvider TypeProvider { get; } = new CustomTypeProvider();
+
+    protected override async Task OnInitAsync()
+    {
+        var client = DeliveryClientBuilder.WithProjectId("975bf280-fd91-488c-994c-2f04416e5ee3").WithTypeProvider(TypeProvider).WithHttpClient(Http).Build();
+
+        contentTypes = (await client.GetTypesAsync()).Types;
+
+        articles = (await client.GetItemsAsync<Article>()).Items;
+    }
+}
