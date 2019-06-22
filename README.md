@@ -8,4 +8,7 @@ This example demonstrates the usage of the Kentico Cloud Delivery SDK for .NET i
 - `dotnet run`
 - [`http://localhost:64633`](http://localhost:64633)
 
+## Preview
+Available at: http://bit.ly/kc-blazor (GitHub pages)
+
 ![Blazor](https://i.imgur.com/jOLkbgo.png)
