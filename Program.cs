@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Blazor.Hosting;
 
-namespace KenticoCloud.Blazor.SampleApp
+namespace Kentico.Kontent.Blazor.SampleApp
 {
     public class Program
     {

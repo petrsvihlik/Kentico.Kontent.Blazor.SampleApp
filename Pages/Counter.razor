@@ -1,32 +1,34 @@
 ﻿@page "/counter"
 
-@using KenticoCloud.Delivery
+@using Kentico.Kontent.Delivery
 @using CloudBoilerplateNet.Models
+@using Humanizer
 
 <h1>Counter</h1>
 
-<label for="projectid">KC Project ID:</label>&nbsp;<input type="text" placeholder="@ProjectId" id="projectid"  @bind="@ProjectId" style="width: 300px;"/>
+<label for="projectid">KC Project ID:</label>&nbsp;
+<input type="text" placeholder="@ProjectId" id="projectid" @bind="@ProjectId" style="width: 300px;" />
 
-<p>Current content item count: @currentCount</p>
+<p>There are <strong>@currentCount.ToWords()</strong> content items in the project!</p>
 
-<button class="btn btn-primary" @onclick="@Fetch">Fetch the count</button>
+<button class="btn btn-primary" @onclick="Fetch">Fetch the count</button>
 
 @code {
 
-private string ProjectId { get; set; } = "975bf280-fd91-488c-994c-2f04416e5ee3";
+    private string ProjectId { get; set; } = "975bf280-fd91-488c-994c-2f04416e5ee3";
 
-int currentCount = 0;
+    int currentCount = 0;
 
-async Task Fetch()
-{
+    async Task Fetch()
+    {
 
-    var client = DeliveryClientBuilder.WithProjectId(ProjectId).Build();
-    var items = await client.GetItemsAsync();
-    currentCount = items.Items.Count;
-}
+        var client = DeliveryClientBuilder.WithProjectId(ProjectId).Build();
+        var items = await client.GetItemsAsync();
+        currentCount = items.Items.Count;
+    }
 
-protected override async Task OnInitAsync()
-{
-    await Fetch();
-}
+    protected override async Task OnInitializedAsync()
+    {
+        await Fetch();
+    }
 }

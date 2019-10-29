@@ -1,7 +1,8 @@
 ﻿@page "/fetchdata"
 
-@using KenticoCloud.Delivery
+@using Kentico.Kontent.Delivery
 @using CloudBoilerplateNet.Models
+@using Humanizer
 
 @inject HttpClient Http
 
@@ -9,7 +10,7 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 <p>
-    Content type: <select id="types">
+    Content type: <select id="types" @onchange="TypeChanged">
 
         @if (contentTypes == null)
         {
@@ -17,53 +18,72 @@
         }
         else
         {
-            @foreach (var type in contentTypes)
+            @foreach (var contentType in contentTypes)
             {
-                <option value="@type.System.Codename" selected="@(type.System.Codename == "article")">@type.System.Name</option>
+                <option value="@contentType.System.Codename" selected="@(contentType.System.Codename == DEFAULT_TYPE)">@contentType.System.Name</option>
             }
         }
     </select>
 </p>
 
-@if (articles == null)
+@if (items == null)
 {
     <p><em>Loading ...</em></p>
 }
-else
+else if (StrongType == typeof(Article))
 {
     <table class="table">
         <thead>
             <tr>
                 <th>Title</th>
-                <th>PostDate</th>
-                <th>MetaKeywords</th>
+                <th>Posted</th>
+                <th>Keywords</th>
             </tr>
         </thead>
         <tbody>
+            @{ IEnumerable<Article>  articles = items.Cast<Article>(); }
             @foreach (var article in articles)
             {
                 <tr>
                     <td>@article.Title</td>
-                    <td>@article.PostDate?.ToString("yyyy-MM-dd")</td>
+                    <td>@article.PostDate?.Humanize()</td>
                     <td>@article.MetaKeywords</td>
                 </tr>
             }
         </tbody>
     </table>
 }
+else
+{
+    <p>There is  no template for: @StrongType.FullName</p>
+}
 
 @code {
-    IEnumerable<Article> articles;
+    IEnumerable<object> items;
     IEnumerable<ContentType> contentTypes;
+    public const string DEFAULT_TYPE = "article";
+    string type = DEFAULT_TYPE;
+    Type StrongType => TypeProvider.GetType(type);
 
     private CustomTypeProvider TypeProvider { get; } = new CustomTypeProvider();
+    private IDeliveryClient Client => DeliveryClientBuilder.WithProjectId("975bf280-fd91-488c-994c-2f04416e5ee3").WithTypeProvider(TypeProvider).WithHttpClient(Http).Build();
 
-    protected override async Task OnInitAsync()
+    protected async void TypeChanged(ChangeEventArgs e)
     {
-        var client = DeliveryClientBuilder.WithProjectId("975bf280-fd91-488c-994c-2f04416e5ee3").WithTypeProvider(TypeProvider).WithHttpClient(Http).Build();
+        type = e.Value.ToString();
+        items = null;
+        await RefreshItems();
+    }
 
-        contentTypes = (await client.GetTypesAsync()).Types;
+    protected override async Task OnInitializedAsync()
+    {
+        contentTypes = (await Client.GetTypesAsync()).Types;
+        await RefreshItems();
+    }
 
-        articles = (await client.GetItemsAsync<Article>()).Items;
+    protected async Task RefreshItems()
+    {
+        items = (await Client.GetItemsAsync<object>(new EqualsFilter("system.type", type))).Items;
+        StateHasChanged();
     }
 }
