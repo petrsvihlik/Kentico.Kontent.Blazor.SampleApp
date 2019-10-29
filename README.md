@@ -1,5 +1,5 @@
-# KenticoCloud.Blazor.SampleApp
-This example demonstrates the usage of the Kentico Cloud Delivery SDK for .NET in a client-hosted Blazor app.
+# Kentico.Kontent.Blazor.SampleApp
+This example demonstrates the usage of the Kentico Kontent Delivery SDK for .NET in a client-hosted Blazor app.
 
 ## How to run
 
