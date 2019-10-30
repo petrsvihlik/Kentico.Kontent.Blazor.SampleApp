@@ -9,6 +9,6 @@ This example demonstrates the usage of the Kentico Kontent Delivery SDK for .NET
 - [`http://localhost:64633`](http://localhost:64633)
 
 ## Preview
-Available at: http://bit.ly/kc-blazor (GitHub pages)
+Available at: http://bit.ly/kk-blazor (GitHub pages)
 
 ![Blazor](https://i.imgur.com/jOLkbgo.png)
